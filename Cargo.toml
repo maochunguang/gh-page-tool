@@ -2,7 +2,12 @@
 name = "gh_page_tool"
 version = "0.1.0"
 edition = "2021"
+authors = ["tommy <mcg915881127@163.com>"]
 
+# 以下是描述和文档链接等可选字段
+description = "A github gh-pages tool for static blog site"
+documentation = "https://github.com/maochunguang/gh-page-tool"
+license = "Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
