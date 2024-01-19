@@ -100,7 +100,6 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     if !status.success() {
         panic!("Failed to push changes to branch :{}", branch);
     }
-    let _ = temp_dir.close().expect("drop temp dir failed!");
     // 退出临时目录
     // 临时目录将在 `temp_dir` 变量离开作用域时自动删除
 }
