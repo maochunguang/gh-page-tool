@@ -106,7 +106,7 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     let handle = thread::spawn(|| {
         // 在这个线程中等待2秒
         thread::sleep(Duration::from_secs(2));
-        println!("Thread woke up after 1 second.");
+        println!("Thread woke up after 2 second.");
     });
 
     // 等待线程结束
