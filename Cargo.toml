@@ -1,6 +1,6 @@
 [package]
 name = "gh_page_tool"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["tommy <mcg915881127@163.com>"]
 

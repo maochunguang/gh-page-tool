@@ -1,11 +1,13 @@
 use std::fs;
 use std::path::Path;
 use std::process::Command;
+use std::thread;
+use std::time::Duration;
 use tempfile::TempDir;
 
 pub(crate) fn publish(directory: &str, branch: &str) {
     // 创建临时目录
-    let temp_dir = TempDir::new_in(".").expect("Failed to create temp directory");
+    let temp_dir = TempDir::with_prefix_in("temp-", ".").expect("Failed to create temp directory");
     let temp_dir_path = temp_dir.path();
     let source_path: &Path = Path::new(directory);
     // 确保目录存在
@@ -27,7 +29,7 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     let git_config_path = Path::new(".git/config");
 
     copy_dir_all(&source_path, &dest_path);
-    
+
     // 切换到book目录
     dest_path = dest_path.join(directory);
     // 在临时目录中进行 Git 操作
@@ -56,7 +58,7 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     } else {
         panic!("No .git/config found in the root directory");
     }
-    
+
     // 切换到临时目录
     std::env::set_current_dir(&dest_path).expect("Failed to change to temp directory");
 
@@ -100,7 +102,17 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     if !status.success() {
         panic!("Failed to push changes to branch :{}", branch);
     }
+    // 创建一个新线程
+    let handle = thread::spawn(|| {
+        // 在这个线程中等待2秒
+        thread::sleep(Duration::from_secs(2));
+        println!("Thread woke up after 1 second.");
+    });
+
+    // 等待线程结束
+    handle.join().unwrap();
     // 退出临时目录
+    let _ = temp_dir.close().expect("drop temp dir failed!");
     // 临时目录将在 `temp_dir` 变量离开作用域时自动删除
 }
 
