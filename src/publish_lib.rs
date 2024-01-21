@@ -1,14 +1,13 @@
-use std::fs;
+use std::{fs, env};
 use std::path::Path;
 use std::process::Command;
 use std::thread;
-use std::time::Duration;
-use tempfile::TempDir;
 
 pub(crate) fn publish(directory: &str, branch: &str) {
+    let current_path = env::current_dir().unwrap();
     // 创建临时目录
-    let temp_dir = TempDir::with_prefix_in("temp-", ".").expect("Failed to create temp directory");
-    let temp_dir_path = temp_dir.path();
+    let temp_dir =Path::new("./.temp-book");
+    fs::create_dir(temp_dir).expect("create temp dir error");
     let source_path: &Path = Path::new(directory);
     // 确保目录存在
     if !source_path.exists() {
@@ -17,7 +16,7 @@ pub(crate) fn publish(directory: &str, branch: &str) {
 
     // 复制文件到临时目录
     // 这里我们假设 `directory` 是一个文件夹路径
-    let mut dest_path = temp_dir_path.join("gh_page_content");
+    let mut dest_path = temp_dir.join("gh_page_content");
     // 目录不存在，创建目录
     let _ = fs::create_dir_all(&dest_path)
         .map(|_| println!("created temp dir {} Success", dest_path.to_str().unwrap()));
@@ -102,17 +101,13 @@ pub(crate) fn publish(directory: &str, branch: &str) {
     if !status.success() {
         panic!("Failed to push changes to branch :{}", branch);
     }
+    std::env::set_current_dir(current_path).expect("Failed to change to root directory");
     // 创建一个新线程
-    let handle = thread::spawn(|| {
-        // 在这个线程中等待2秒
-        thread::sleep(Duration::from_secs(2));
-        println!("Thread woke up after 2 second.");
-    });
-
-    // 等待线程结束
-    handle.join().unwrap();
+    thread::sleep(std::time::Duration::from_secs(3));
+    println!("thread sleep 3s!");
     // 退出临时目录
-    let _ = temp_dir.close().expect("drop temp dir failed!");
+    fs::remove_dir_all(temp_dir).unwrap();
+    // let _ = temp_dir.close().expect("drop temp dir failed!");
     // 临时目录将在 `temp_dir` 变量离开作用域时自动删除
 }
 
